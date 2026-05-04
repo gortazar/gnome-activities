@@ -1,5 +1,4 @@
 """CLI for gnome-activities."""
-import json
 import logging
 import sys
 

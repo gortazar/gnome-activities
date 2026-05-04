@@ -13,9 +13,13 @@ import struct
 import sys
 import logging
 import subprocess
+from pathlib import Path
+
+_log_dir = Path.home() / ".cache" / "gnome-activities"
+_log_dir.mkdir(parents=True, exist_ok=True)
 
 logging.basicConfig(
-    filename="/tmp/gnome_activities_host.log",  # noqa: S108 - intentional log file
+    filename=str(_log_dir / "native-host.log"),
     level=logging.DEBUG,
     format="%(asctime)s %(levelname)s %(message)s",
 )

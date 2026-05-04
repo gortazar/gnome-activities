@@ -92,7 +92,7 @@ def run_service():
         def ActivityChanged(self, activity_name):
             pass
 
-    service = ActivitiesService()
+    ActivitiesService()
     logger.info(f"D-Bus service started at {DBUS_BUS_NAME}")
     loop = GLib.MainLoop()
     loop.run()
