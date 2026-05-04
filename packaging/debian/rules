@@ -1,0 +1,14 @@
+#!/usr/bin/make -f
+%:
+	dh $@ --with python3 --buildsystem=pybuild
+
+override_dh_auto_install:
+	dh_auto_install
+	install -D -m 0755 firefox-extension/native/native_host.py \
+		debian/gnome-activities/usr/lib/gnome-activities/native-host.py
+	install -D -m 0644 firefox-extension/native/manifest.json \
+		debian/gnome-activities/usr/lib/mozilla/native-messaging-hosts/gnome.activities.json
+	install -D -m 0644 packaging/debian/gnome-activities.service \
+		debian/gnome-activities/usr/lib/systemd/user/gnome-activities.service
+	install -D -m 0644 gnome-activities.desktop \
+		debian/gnome-activities/usr/share/applications/gnome-activities.desktop

@@ -1,0 +1,5 @@
+gnome_activities/ usr/lib/python3/dist-packages/
+firefox-extension/native/native_host.py usr/lib/gnome-activities/
+firefox-extension/native/manifest.json usr/lib/mozilla/native-messaging-hosts/gnome.activities.json
+packaging/debian/gnome-activities.service usr/lib/systemd/user/
+gnome-activities.desktop usr/share/applications/

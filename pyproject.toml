@@ -1,0 +1,67 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gnome-activities"
+version = "0.1.0"
+description = "KDE-like activities manager for GNOME"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+authors = [
+  {name = "GNOME Activities Contributors"},
+]
+keywords = ["gnome", "activities", "tasks", "desktop"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: X11 Applications :: GTK",
+  "Intended Audience :: End Users/Desktop",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Desktop Environment :: Gnome",
+]
+dependencies = [
+  "click>=8.0",
+]
+
+[project.optional-dependencies]
+dbus = ["dbus-python"]
+dev = [
+  "pytest>=7.0",
+  "pytest-cov>=4.0",
+  "black>=23.0",
+  "flake8>=6.0",
+  "bandit>=1.7",
+  "click>=8.0",
+]
+
+[project.scripts]
+gnome-activities = "gnome_activities.cli.main:main"
+
+[project.urls]
+Homepage = "https://github.com/gortazar/gnome-activities"
+Repository = "https://github.com/gortazar/gnome-activities"
+Issues = "https://github.com/gortazar/gnome-activities/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["gnome_activities*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+[tool.black]
+line-length = 120
+target-version = ["py39", "py310", "py311"]
+
+[tool.coverage.run]
+source = ["gnome_activities"]
+omit = ["tests/*"]
