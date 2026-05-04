@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GNOME Activities</title>
+  <style>
+    body {
+      min-width: 220px;
+      font-family: "Cantarell", sans-serif;
+      background: #2d2d2d;
+      color: #eeeeec;
+      margin: 0;
+      padding: 8px 0;
+    }
+    h2 {
+      font-size: 13px;
+      margin: 0 12px 8px;
+      color: #aaaaaa;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    #current-activity {
+      font-size: 15px;
+      font-weight: bold;
+      padding: 8px 12px;
+      background: #3a3a3a;
+      margin-bottom: 8px;
+      color: #4a9fd4;
+    }
+    #current-activity span.label {
+      font-size: 11px;
+      color: #888;
+      font-weight: normal;
+      display: block;
+    }
+    #activities-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    #activities-list li {
+      padding: 6px 12px;
+      cursor: default;
+      font-size: 13px;
+      border-left: 3px solid transparent;
+    }
+    #activities-list li.active {
+      border-left-color: #4a9fd4;
+      color: #4a9fd4;
+      font-weight: bold;
+    }
+    #activities-list li:hover {
+      background: #3a3a3a;
+    }
+    #no-activities {
+      padding: 8px 12px;
+      color: #888;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div id="current-activity">
+    <span class="label">Current Activity</span>
+    <span id="current-name">Loading…</span>
+  </div>
+  <h2>Activities</h2>
+  <ul id="activities-list"></ul>
+  <div id="no-activities" style="display:none">No activities configured.</div>
+  <script src="popup.js"></script>
+</body>
+</html>

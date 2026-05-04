@@ -3,3 +3,4 @@ firefox-extension/native/native_host.py usr/lib/gnome-activities/
 firefox-extension/native/manifest.json usr/lib/mozilla/native-messaging-hosts/gnome.activities.json
 packaging/debian/gnome-activities.service usr/lib/systemd/user/
 gnome-activities.desktop usr/share/applications/
+gnome-extension/* usr/share/gnome-shell/extensions/gnome-activities@gortazar.github.com/

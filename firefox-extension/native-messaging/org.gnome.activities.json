@@ -1,0 +1,7 @@
+{
+  "name": "org.gnome.activities",
+  "description": "GNOME Activities native messaging host",
+  "path": "/usr/lib/gnome-activities/gnome_activities_host.py",
+  "type": "stdio",
+  "allowed_extensions": ["gnome-activities@gortazar.github.com"]
+}
