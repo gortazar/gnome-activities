@@ -9,6 +9,8 @@ jobs:
   build-deb:
     name: Build .deb
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - name: Install build dependencies
@@ -29,6 +31,8 @@ jobs:
   build-firefox-extension:
     name: Build Firefox Extension
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - name: Zip Firefox extension
