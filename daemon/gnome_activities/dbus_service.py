@@ -49,11 +49,14 @@ def run_service():
         @dbus.service.method(DBUS_INTERFACE, in_signature="ss", out_signature="s")
         def RenameActivity(self, old_name, new_name):
             activity = self.manager.rename_activity(str(old_name), str(new_name))
+            if activity.is_active:
+                self.ActivityChanged(activity.name)
             return json.dumps(activity.to_dict())
 
         @dbus.service.method(DBUS_INTERFACE, in_signature="s", out_signature="s")
         def ActivateActivity(self, name):
             activity = self.manager.activate_activity(str(name))
+            self.ActivityChanged(activity.name)
             return json.dumps(activity.to_dict())
 
         @dbus.service.method(DBUS_INTERFACE, in_signature="", out_signature="s")

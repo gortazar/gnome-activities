@@ -3,9 +3,13 @@
 ## What is GNOME Activities?
 
 GNOME Activities brings KDE Activities-like task management to GNOME Shell. It lets you create
-named *activities* (e.g., "Work", "Personal", "Gaming") and associates specific applications and
-files with each one. When you switch activities, the previous activity's apps close and the new
-activity's apps open automatically.
+named *activities* (e.g., "Work", "Personal", "Gaming") and associate them with a specific set
+of open applications. When you switch activities, the previous activity's apps close and the new
+activity's apps reopen automatically.
+
+**No manual configuration is needed for apps.** GNOME Activities automatically tracks which
+applications are open while an activity is active — open an app and it is added to the activity;
+close it and it is removed.
 
 ---
 
@@ -15,7 +19,7 @@ activity's apps open automatically.
 
 ```bash
 sudo dpkg -i gnome-activities_0.1.0-1_all.deb
-sudo apt-get install -f   # fix any missing dependencies
+sudo apt-get install -f   # install any missing dependencies
 ```
 
 ### From Source
@@ -23,6 +27,36 @@ sudo apt-get install -f   # fix any missing dependencies
 ```bash
 cd daemon
 pip install .
+```
+
+---
+
+## Quick Start
+
+1. Install and start the daemon (see below).
+2. Enable the GNOME Shell extension (see below).
+3. Click the **Activities** button in the top-right panel.
+4. Click **＋ New Activity** and type a name (e.g., "Work") → press **Enter**.
+5. Switch to that activity — it becomes active.
+6. Open your work apps (browser, editor, terminal…).  They are tracked automatically.
+7. When you later switch back, those apps reopen where you left them.
+
+---
+
+## Starting the Daemon
+
+The daemon provides a D-Bus service that the GNOME Shell extension talks to.
+Enable it as a systemd user service so it starts automatically at login:
+
+```bash
+systemctl --user enable gnome-activities
+systemctl --user start gnome-activities
+```
+
+Or run it manually in a terminal for testing:
+
+```bash
+gnome-activities daemon
 ```
 
 ---
@@ -43,103 +77,60 @@ pip install .
    gnome-extensions enable gnome-activities@gortazar.github.com
    ```
 
-4. A panel indicator will appear in the top bar showing the current activity name.
+4. An **Activities** indicator appears in the top-right of the panel.
 
 ---
 
-## Starting the Daemon
+## Using the Activities Panel
 
-The daemon provides a D-Bus service. Enable it as a systemd user service:
-
-```bash
-systemctl --user enable gnome-activities
-systemctl --user start gnome-activities
-```
-
-Or run it manually:
-
-```bash
-gnome-activities daemon
-```
-
----
-
-## CLI Usage
-
-### List activities
-
-```bash
-gnome-activities list
-```
-
-### Create a new activity
-
-```bash
-gnome-activities add Work
-gnome-activities add Personal
-```
+Click the **Activities** indicator in the top bar to open the panel menu.
 
 ### Switch to an activity
 
-```bash
-gnome-activities activate Work
-```
+Click an activity name in the list.  The previous activity's apps close and
+this activity's apps reopen.
 
-This closes the current activity's non-global apps and opens all apps associated with "Work".
+### Create a new activity
 
-### Check the active activity
-
-```bash
-gnome-activities status
-```
+Click **＋ New Activity** at the bottom of the menu, type the name, and press
+**Enter** (or click **✔**).  Press **Escape** or click **✖** to cancel.
 
 ### Rename an activity
 
-```bash
-gnome-activities rename Work "Day Job"
-```
-
-### Remove an activity
-
-```bash
-gnome-activities remove Personal
-```
+Click the **✏** pencil icon next to the activity name, type the new name, and
+press **Enter**.
 
 ---
 
-## Managing Apps in Activities
+## Automatic App Tracking
 
-### Add an app to an activity
+While an activity is active, GNOME Activities automatically:
 
-```bash
-gnome-activities app add Work firefox firefox
-gnome-activities app add Work code "code /home/user/project"
-gnome-activities app add Work notes "gedit" --file /home/user/notes.txt
-```
+- **Adds** an app to the activity as soon as you launch it.
+- **Removes** an app from the activity as soon as you close it.
 
-### Mark an app as global (not closed when switching)
+This means the activity always reflects what was open the last time you used it.
+No manual management of apps is required.
 
-Global apps (e.g., Spotify, Slack) stay open regardless of which activity is active.
+---
 
-```bash
-gnome-activities app add Work spotify spotify --global
-```
+## Global Apps
 
-### List apps in an activity
+Some apps (e.g., a music player, a communication tool) should stay open
+regardless of which activity is active.  Mark them as *global* using the CLI:
 
 ```bash
-gnome-activities app list Work
+gnome-activities app add Work thunderbird thunderbird --global
 ```
 
-### Remove an app from an activity
-
-```bash
-gnome-activities app remove Work firefox
-```
+Global apps are never closed when you switch activities.
 
 ---
 
 ## Firefox Extension Setup
+
+The optional Firefox extension tracks which browser tabs are open per activity
+so they are restored when you switch back.
 
 1. Install the extension in Firefox:
    - Open Firefox → Extensions → Install from file → select `gnome-activities-firefox.zip`
@@ -157,17 +148,22 @@ gnome-activities app remove Work firefox
 
 ---
 
-## Marking Apps as Global
+## Advanced: CLI Reference
 
-Global apps are not closed when you switch activities. Examples:
+The CLI is intended for scripting and advanced configuration; day-to-day use
+goes through the panel.
 
-- Music player (Spotify, Rhythmbox)
-- Communication tools (Slack, Telegram)
-- System monitor
-
-```bash
-gnome-activities app add Personal spotify spotify --global
-```
+| Command | Description |
+|---------|-------------|
+| `gnome-activities list` | List all activities |
+| `gnome-activities add <name>` | Create an activity |
+| `gnome-activities remove <name>` | Delete an activity |
+| `gnome-activities rename <old> <new>` | Rename an activity |
+| `gnome-activities activate <name>` | Switch to an activity |
+| `gnome-activities status` | Show active activity and its apps |
+| `gnome-activities app add <act> <id> <cmd> [--file <f>]... [--global]` | Manually add app |
+| `gnome-activities app remove <act> <id>` | Manually remove app |
+| `gnome-activities app list <act>` | List apps in an activity |
 
 ---
 
@@ -178,11 +174,12 @@ gnome-activities app add Personal spotify spotify --global
 - Check D-Bus is running: `echo $DBUS_SESSION_BUS_ADDRESS`
 - Check logs: `journalctl --user -u gnome-activities`
 
-**Apps don't launch when switching activities:**
-- Verify the `exec_cmd` is correct: `gnome-activities app list <activity>`
-- Test the command manually in a terminal
+**Apps don't reopen when switching activities:**
+- Ensure the daemon is running: `gnome-activities status`
+- Check that the app was open while the activity was active (auto-tracking only works when the daemon is running)
 
 **The GNOME Shell extension shows "No Activity":**
-- Ensure the daemon is running: `gnome-activities status`
-- Check that D-Bus service name `org.gnome.Activities` is registered:
+- Ensure the daemon is running: `systemctl --user status gnome-activities`
+- Check that the D-Bus service is registered:
   `gdbus introspect --session --dest org.gnome.Activities --object-path /org/gnome/Activities`
+
