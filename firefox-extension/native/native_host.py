@@ -69,10 +69,12 @@ def subscribe_activity_changed(dbus_iface) -> None:
                 if dbus_iface:
                     if old_name:
                         result = str(dbus_iface.GetActivityTabs(old_name))
-                        old_tabs = json.loads(result) if result else []
+                        parsed = json.loads(result) if result else []
+                        old_tabs = parsed if isinstance(parsed, list) else []
                     if new_name:
                         result = str(dbus_iface.GetActivityTabs(new_name))
-                        new_tabs = json.loads(result) if result else []
+                        parsed = json.loads(result) if result else []
+                        new_tabs = parsed if isinstance(parsed, list) else []
             except Exception as e:
                 logger.warning("Failed to fetch tabs for activity switch: %s", e)
 
