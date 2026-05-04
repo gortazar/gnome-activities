@@ -40,7 +40,7 @@ class ActivityManager:
         storage.validate_name(name)
         if name in self._activities:
             raise ActivityError(f"Activity '{name}' already exists.")
-        now = datetime.datetime.utcnow().isoformat()
+        now = datetime.datetime.now(datetime.timezone.utc).isoformat()
         activity = Activity(name=name, description=description, created_at=now)
         self._activities[name] = activity
         self._save()
@@ -71,7 +71,7 @@ class ActivityManager:
             act.is_active = False
         activity = self._activities[name]
         activity.is_active = True
-        activity.last_used = datetime.datetime.utcnow().isoformat()
+        activity.last_used = datetime.datetime.now(datetime.timezone.utc).isoformat()
         self._save()
         return activity
 
