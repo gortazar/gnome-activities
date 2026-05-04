@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import threading
 import time
+from typing import Optional
 
 from gnome_activities.core.manager import ActivityManager
 from gnome_activities.core.tracker import AppTracker
@@ -18,7 +19,7 @@ class WindowMonitor:
         self._tracker = AppTracker()
         self._interval = interval
         self._running = False
-        self._thread: threading.Thread = None
+        self._thread: Optional[threading.Thread] = None
 
     def start(self) -> None:
         self._running = True

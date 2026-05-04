@@ -63,4 +63,3 @@ See [docs/developer/architecture.md](docs/developer/architecture.md).
 ## License
 
 MIT License. See [LICENSE](LICENSE).
-Task management for gnome
