@@ -1,0 +1,13 @@
+.gnome-activities-indicator {
+    padding: 0 8px;
+    font-weight: bold;
+}
+
+.gnome-activities-menu-item {
+    padding: 4px 8px;
+}
+
+.gnome-activities-active {
+    font-weight: bold;
+    color: #4a9fd4;
+}

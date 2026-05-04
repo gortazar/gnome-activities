@@ -1,0 +1,15 @@
+Source: gnome-activities
+Section: utils
+Priority: optional
+Maintainer: GNOME Activities Team <gnome-activities@example.com>
+Build-Depends: debhelper-compat (= 13), python3, python3-pip, python3-setuptools
+Standards-Version: 4.6.0
+
+Package: gnome-activities
+Architecture: all
+Depends: python3 (>= 3.10), python3-dbus, wmctrl, ${misc:Depends}
+Recommends: gnome-shell
+Description: KDE-like activities manager for GNOME
+ GNOME Activities brings KDE Activities-like task management to GNOME.
+ It manages named workspaces/contexts, remembers which apps and files
+ are open per activity, and restores them when switching.

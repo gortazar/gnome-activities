@@ -1,0 +1,5 @@
+daemon/gnome_activities /usr/lib/python3/dist-packages/
+daemon/gnome-activities.service /usr/lib/systemd/user/
+firefox-extension/native-messaging/gnome_activities_host.py /usr/lib/gnome-activities/
+firefox-extension/native-messaging/org.gnome.activities.json /usr/lib/mozilla/native-messaging-hosts/
+gnome-extension/* /usr/share/gnome-shell/extensions/gnome-activities@gortazar.github.com/
