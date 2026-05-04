@@ -1,10 +1,13 @@
 """Activity manager - core business logic."""
 from __future__ import annotations
 import datetime
+import logging
 from typing import Dict, List, Optional
 
 from gnome_activities.core.activity import Activity, AppState
 from gnome_activities.core import storage
+
+logger = logging.getLogger(__name__)
 
 
 class ActivityError(Exception):
@@ -63,16 +66,48 @@ class ActivityManager:
         self._save()
         return activity
 
+    def rename(self, old_name: str, new_name: str) -> Activity:
+        storage.validate_name(old_name)
+        storage.validate_name(new_name)
+        if old_name not in self._activities:
+            raise ActivityError(f"Activity '{old_name}' not found.")
+        if new_name != old_name and new_name in self._activities:
+            raise ActivityError(f"Activity '{new_name}' already exists.")
+        activity = self._activities.pop(old_name)
+        activity.name = new_name
+        self._activities[new_name] = activity
+        self._save()
+        return activity
+
     def activate(self, name: str) -> Activity:
         storage.validate_name(name)
         if name not in self._activities:
             raise ActivityError(f"Activity '{name}' not found.")
+
+        from gnome_activities.core.launcher import AppLauncher
+        launcher = AppLauncher()
+        always_available = self.get_always_available_apps()
+
+        # Close non-global apps of the currently active activity.
+        current = self.get_current()
+        if current and current.name != name:
+            launcher.close_all_except(always_available)
+
         for act in self._activities.values():
             act.is_active = False
         activity = self._activities[name]
         activity.is_active = True
         activity.last_used = datetime.datetime.now(datetime.timezone.utc).isoformat()
         self._save()
+
+        # Launch apps belonging to the newly activated activity.
+        for app_state in activity.apps:
+            if app_state.app_id not in always_available:
+                try:
+                    launcher.launch_app(app_state)
+                except Exception as e:
+                    logger.warning("Failed to launch app '%s': %s", app_state.app_id, e)
+
         return activity
 
     def get_current(self) -> Optional[Activity]:
@@ -86,6 +121,13 @@ class ActivityManager:
         if name not in self._activities:
             raise ActivityError(f"Activity '{name}' not found.")
         self._activities[name].apps = apps
+        self._save()
+
+    def update_activity_tabs(self, name: str, tabs: List[str]) -> None:
+        storage.validate_name(name)
+        if name not in self._activities:
+            raise ActivityError(f"Activity '{name}' not found.")
+        self._activities[name].tabs = tabs
         self._save()
 
     def add_always_available_app(self, app_id: str) -> None:

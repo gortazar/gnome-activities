@@ -33,7 +33,10 @@ jobs:
           pip install build
 
       - name: Build deb package
-        run: dpkg-buildpackage -us -uc -b
+        run: |
+          ln -sf packaging/debian debian
+          dpkg-buildpackage -us -uc -b
+          rm -f debian
 
       - name: Package Firefox extension
         run: |

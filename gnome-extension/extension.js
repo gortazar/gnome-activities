@@ -30,23 +30,24 @@ const DBUS_INTERFACE = 'org.gnome.Activities';
 const DBUS_IFACE_XML = `
 <node>
   <interface name="${DBUS_INTERFACE}">
-    <method name="ListActivities">
+    <method name="List">
       <arg type="s" direction="out"/>
     </method>
-    <method name="AddActivity">
-      <arg type="s" direction="in"/>
-      <arg type="s" direction="out"/>
-    </method>
-    <method name="RenameActivity">
+    <method name="Create">
       <arg type="s" direction="in"/>
       <arg type="s" direction="in"/>
       <arg type="s" direction="out"/>
     </method>
-    <method name="ActivateActivity">
+    <method name="Rename">
+      <arg type="s" direction="in"/>
       <arg type="s" direction="in"/>
       <arg type="s" direction="out"/>
     </method>
-    <method name="GetActiveActivity">
+    <method name="Activate">
+      <arg type="s" direction="in"/>
+      <arg type="s" direction="out"/>
+    </method>
+    <method name="Current">
       <arg type="s" direction="out"/>
     </method>
     <method name="TrackAppOpened">
@@ -58,6 +59,7 @@ const DBUS_IFACE_XML = `
       <arg type="s" direction="in"/>
     </method>
     <signal name="ActivityChanged">
+      <arg type="s"/>
       <arg type="s"/>
     </signal>
   </interface>
@@ -110,8 +112,8 @@ const ActivitiesIndicator = GObject.registerClass(
             // Reflect activity switches in the label.
             this._activityChangedId = this._proxy.connectSignal(
                 'ActivityChanged',
-                (_proxy, _sender, [name]) => {
-                    this._label.set_text(name || 'No Activity');
+                (_proxy, _sender, [_oldName, newName]) => {
+                    this._label.set_text(newName || 'No Activity');
                     if (this.menu.isOpen)
                         this._refreshMenu();
                 }
@@ -168,7 +170,7 @@ const ActivitiesIndicator = GObject.registerClass(
 
         _updateActiveLabel() {
             if (!this._proxy) return;
-            this._proxy.GetActiveActivityRemote((result, error) => {
+            this._proxy.CurrentRemote((result, error) => {
                 if (error) {
                     this._label.set_text('No Activity');
                     return;
@@ -192,9 +194,9 @@ const ActivitiesIndicator = GObject.registerClass(
             this.menu.removeAll();
             if (!this._proxy) return;
 
-            this._proxy.ListActivitiesRemote((result, error) => {
+            this._proxy.ListRemote((result, error) => {
                 if (error) {
-                    logError(error, 'GNOME Activities: ListActivities failed');
+                    logError(error, 'GNOME Activities: List failed');
                     return;
                 }
 
@@ -387,7 +389,7 @@ const ActivitiesIndicator = GObject.registerClass(
 
         _activateActivity(name) {
             if (!this._proxy) return;
-            this._proxy.ActivateActivityRemote(name, (_result, error) => {
+            this._proxy.ActivateRemote(name, (_result, error) => {
                 if (error)
                     logError(error, `GNOME Activities: failed to activate '${name}'`);
                 else
@@ -397,7 +399,7 @@ const ActivitiesIndicator = GObject.registerClass(
 
         _createActivity(name) {
             if (!this._proxy) return;
-            this._proxy.AddActivityRemote(name, (_result, error) => {
+            this._proxy.CreateRemote(name, '', (_result, error) => {
                 if (error)
                     logError(error, `GNOME Activities: failed to create '${name}'`);
                 else
@@ -408,7 +410,7 @@ const ActivitiesIndicator = GObject.registerClass(
         _renameActivity(oldName, newName) {
             // Activity names are case-sensitive; 'Work' and 'work' are different activities.
             if (!this._proxy || oldName === newName) return;
-            this._proxy.RenameActivityRemote(oldName, newName, (_result, error) => {
+            this._proxy.RenameRemote(oldName, newName, (_result, error) => {
                 if (error)
                     logError(error, `GNOME Activities: failed to rename '${oldName}'`);
                 else

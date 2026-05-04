@@ -46,9 +46,21 @@ bandit -r gnome_activities/ -ll
 
 ## Building the Debian Package
 
+The Debian packaging metadata lives under `packaging/debian/`. Because
+`dpkg-buildpackage` expects it at `./debian/`, create a symlink first:
+
 ```bash
+ln -sf packaging/debian debian
 dpkg-buildpackage -us -uc -b
+rm -f debian
 ls ../*.deb
+```
+
+Alternatively, use the provided helper script which handles the symlink
+automatically:
+
+```bash
+bash packaging/build-deb.sh
 ```
 
 ## Building the Firefox Extension

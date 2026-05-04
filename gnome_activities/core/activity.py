@@ -31,6 +31,7 @@ class Activity:
     name: str
     description: str = ""
     apps: List[AppState] = dataclasses.field(default_factory=list)
+    tabs: List[str] = dataclasses.field(default_factory=list)
     created_at: str = ""
     last_used: str = ""
     is_active: bool = False
@@ -47,6 +48,7 @@ class Activity:
             name=data["name"],
             description=data.get("description", ""),
             apps=apps,
+            tabs=data.get("tabs", []),
             created_at=data.get("created_at", ""),
             last_used=data.get("last_used", ""),
             is_active=data.get("is_active", False),

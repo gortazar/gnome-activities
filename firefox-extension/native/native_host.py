@@ -6,7 +6,8 @@ import os
 import struct
 import sys
 import logging
-from typing import Any, Dict, Optional
+import threading
+from typing import Any, Dict, List, Optional
 
 logging.basicConfig(
     filename=os.path.expanduser("~/.local/share/gnome-activities/native-host.log"),
@@ -54,6 +55,46 @@ def get_dbus_connection():
         return None
 
 
+def subscribe_activity_changed(dbus_iface) -> None:
+    """Subscribe to the ActivityChanged D-Bus signal and relay it to Firefox."""
+    try:
+        import dbus
+
+        def _on_activity_changed(old_name, new_name):
+            logger.debug("ActivityChanged: '%s' -> '%s'", old_name, new_name)
+            try:
+                # Retrieve tabs to close (from old activity) and open (for new activity).
+                old_tabs: List[str] = []
+                new_tabs: List[str] = []
+                if dbus_iface:
+                    if old_name:
+                        result = str(dbus_iface.GetActivityTabs(old_name))
+                        old_tabs = json.loads(result) if result else []
+                    if new_name:
+                        result = str(dbus_iface.GetActivityTabs(new_name))
+                        new_tabs = json.loads(result) if result else []
+            except Exception as e:
+                logger.warning("Failed to fetch tabs for activity switch: %s", e)
+
+            send_message({
+                "type": "activity_changed",
+                "old_activity": str(old_name),
+                "new_activity": str(new_name),
+                "close_tabs": old_tabs,
+                "urls_to_open": new_tabs,
+            })
+
+        bus = dbus.SessionBus()
+        bus.add_signal_receiver(
+            _on_activity_changed,
+            dbus_interface="org.gnome.Activities",
+            signal_name="ActivityChanged",
+        )
+        logger.debug("Subscribed to ActivityChanged signal")
+    except Exception as e:
+        logger.warning("Failed to subscribe to ActivityChanged: %s", e)
+
+
 def handle_message(message: Dict[str, Any], dbus_iface) -> None:
     """Handle an incoming message from Firefox."""
     msg_type = message.get("type")
@@ -64,10 +105,13 @@ def handle_message(message: Dict[str, Any], dbus_iface) -> None:
         urls = [t.get("url", "") for t in tabs if t.get("url")]
         if dbus_iface:
             try:
-                current = json.loads(str(dbus_iface.Current()))
+                current_json = str(dbus_iface.Current())
+                current = json.loads(current_json)
                 if current and isinstance(current, dict):
                     act_name = current.get("name", "")
-                    logger.debug("Updating tab URLs for activity '%s'", act_name)
+                    if act_name:
+                        dbus_iface.SetActivityTabs(act_name, json.dumps(urls))
+                        logger.debug("Saved %d tabs for activity '%s'", len(urls), act_name)
             except Exception as e:
                 logger.warning("Failed to update activity tabs: %s", e)
 
@@ -75,16 +119,59 @@ def handle_message(message: Dict[str, Any], dbus_iface) -> None:
         tab = message.get("tab", {})
         url = tab.get("url", "")
         logger.debug("Tab event %s: %s", msg_type, url)
+        if dbus_iface and url:
+            try:
+                current_json = str(dbus_iface.Current())
+                current = json.loads(current_json)
+                if current and isinstance(current, dict):
+                    act_name = current.get("name", "")
+                    if act_name:
+                        tabs_json = str(dbus_iface.GetActivityTabs(act_name))
+                        urls = json.loads(tabs_json) if tabs_json else []
+                        if url not in urls:
+                            urls.append(url)
+                            dbus_iface.SetActivityTabs(act_name, json.dumps(urls))
+            except Exception as e:
+                logger.warning("Failed to track tab event: %s", e)
 
     elif msg_type == "tab_closed":
         tab_id = message.get("tabId")
-        logger.debug("Tab closed: %s", tab_id)
+        url = message.get("url", "")
+        logger.debug("Tab closed: %s url=%s", tab_id, url)
+        if dbus_iface and url:
+            try:
+                current_json = str(dbus_iface.Current())
+                current = json.loads(current_json)
+                if current and isinstance(current, dict):
+                    act_name = current.get("name", "")
+                    if act_name:
+                        tabs_json = str(dbus_iface.GetActivityTabs(act_name))
+                        urls = json.loads(tabs_json) if tabs_json else []
+                        urls = [u for u in urls if u != url]
+                        dbus_iface.SetActivityTabs(act_name, json.dumps(urls))
+            except Exception as e:
+                logger.warning("Failed to remove closed tab: %s", e)
+
+
+def _run_glib_loop() -> None:
+    """Run a GLib main loop for D-Bus signal reception in a background thread."""
+    try:
+        from gi.repository import GLib
+        loop = GLib.MainLoop()
+        loop.run()
+    except Exception as e:
+        logger.warning("GLib main loop error: %s", e)
 
 
 def main() -> None:
     """Main loop for the native messaging host."""
     logger.info("GNOME Activities native host started (PID %d)", os.getpid())
     dbus_iface = get_dbus_connection()
+    subscribe_activity_changed(dbus_iface)
+
+    # Run a GLib event loop in a daemon thread to receive D-Bus signals.
+    glib_thread = threading.Thread(target=_run_glib_loop, daemon=True)
+    glib_thread.start()
 
     while True:
         message = read_message()

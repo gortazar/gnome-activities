@@ -11,7 +11,7 @@ The native messaging host bridges Firefox and the gnome-activities daemon.
 
 ```bash
 # If installed via deb package, the host is already at:
-# /usr/lib/gnome-activities/native-host.py
+# /usr/lib/gnome-activities/native_host.py
 
 # Install the native messaging manifest for Firefox:
 mkdir -p ~/.mozilla/native-messaging-hosts/

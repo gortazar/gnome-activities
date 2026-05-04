@@ -120,7 +120,7 @@ Some apps (e.g., a music player, a communication tool) should stay open
 regardless of which activity is active.  Mark them as *global* using the CLI:
 
 ```bash
-gnome-activities app add Work thunderbird thunderbird --global
+gnome-activities always add thunderbird
 ```
 
 Global apps are never closed when you switch activities.
@@ -138,10 +138,10 @@ so they are restored when you switch back.
 2. Install the native messaging host:
 
    ```bash
-   sudo install -D -m 755 firefox-extension/native-messaging/gnome_activities_host.py \
-       /usr/lib/gnome-activities/gnome_activities_host.py
-   sudo install -D -m 644 firefox-extension/native-messaging/org.gnome.activities.json \
-       /usr/lib/mozilla/native-messaging-hosts/org.gnome.activities.json
+   sudo install -D -m 755 firefox-extension/native/native_host.py \
+       /usr/lib/gnome-activities/native_host.py
+   sudo install -D -m 644 firefox-extension/native/manifest.json \
+       /usr/lib/mozilla/native-messaging-hosts/gnome.activities.json
    ```
 
 3. The extension will automatically track which tabs are open and notify the daemon.
@@ -156,14 +156,15 @@ goes through the panel.
 | Command | Description |
 |---------|-------------|
 | `gnome-activities list` | List all activities |
-| `gnome-activities add <name>` | Create an activity |
-| `gnome-activities remove <name>` | Delete an activity |
-| `gnome-activities rename <old> <new>` | Rename an activity |
+| `gnome-activities create <name>` | Create an activity |
+| `gnome-activities delete <name>` | Delete an activity |
 | `gnome-activities activate <name>` | Switch to an activity |
-| `gnome-activities status` | Show active activity and its apps |
-| `gnome-activities app add <act> <id> <cmd> [--file <f>]... [--global]` | Manually add app |
-| `gnome-activities app remove <act> <id>` | Manually remove app |
-| `gnome-activities app list <act>` | List apps in an activity |
+| `gnome-activities modify <name> -d <desc>` | Update an activity's description |
+| `gnome-activities current` | Show the currently active activity |
+| `gnome-activities status` | Show overall status and always-available apps |
+| `gnome-activities always add <app_id>` | Mark an app as always available |
+| `gnome-activities always remove <app_id>` | Unmark an app as always available |
+| `gnome-activities always list` | List always-available apps |
 
 ---
 

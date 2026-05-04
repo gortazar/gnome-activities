@@ -51,11 +51,22 @@ if DBUS_AVAILABLE:
             except ActivityError as e:
                 return json.dumps({"status": "error", "message": str(e)})
 
+        @dbus.service.method(DBUS_INTERFACE, in_signature="ss", out_signature="s")
+        def Rename(self, old_name: str, new_name: str):
+            try:
+                act = self._manager.rename(str(old_name), str(new_name))
+                self.ActivityChanged(str(old_name), str(new_name))
+                return json.dumps({"status": "ok", "activity": act.to_dict()})
+            except ActivityError as e:
+                return json.dumps({"status": "error", "message": str(e)})
+
         @dbus.service.method(DBUS_INTERFACE, in_signature="s", out_signature="s")
         def Activate(self, name: str):
             try:
+                current = self._manager.get_current()
+                old_name = current.name if current else ""
                 act = self._manager.activate(str(name))
-                self.ActivityChanged("", str(name))
+                self.ActivityChanged(old_name, str(name))
                 return json.dumps({"status": "ok", "activity": act.to_dict()})
             except ActivityError as e:
                 return json.dumps({"status": "error", "message": str(e)})
@@ -66,6 +77,53 @@ if DBUS_AVAILABLE:
             if act:
                 return json.dumps(act.to_dict())
             return json.dumps(None)
+
+        @dbus.service.method(DBUS_INTERFACE, in_signature="ssas", out_signature="s")
+        def TrackAppOpened(self, app_id: str, exec_cmd: str, files):
+            try:
+                current = self._manager.get_current()
+                if current:
+                    from gnome_activities.core.activity import AppState
+                    existing = {a.app_id: a for a in current.apps}
+                    if str(app_id) not in existing:
+                        app_state = AppState(
+                            app_id=str(app_id),
+                            command=str(exec_cmd),
+                            files=list(files),
+                        )
+                        current.apps.append(app_state)
+                        self._manager.update_app_state(current.name, current.apps)
+                return json.dumps({"status": "ok"})
+            except Exception as e:
+                return json.dumps({"status": "error", "message": str(e)})
+
+        @dbus.service.method(DBUS_INTERFACE, in_signature="s", out_signature="s")
+        def TrackAppClosed(self, app_id: str):
+            try:
+                current = self._manager.get_current()
+                if current:
+                    current.apps = [a for a in current.apps if a.app_id != str(app_id)]
+                    self._manager.update_app_state(current.name, current.apps)
+                return json.dumps({"status": "ok"})
+            except Exception as e:
+                return json.dumps({"status": "error", "message": str(e)})
+
+        @dbus.service.method(DBUS_INTERFACE, in_signature="ss", out_signature="s")
+        def SetActivityTabs(self, activity_name: str, urls_json: str):
+            try:
+                tabs = json.loads(urls_json)
+                self._manager.update_activity_tabs(str(activity_name), tabs)
+                return json.dumps({"status": "ok"})
+            except Exception as e:
+                return json.dumps({"status": "error", "message": str(e)})
+
+        @dbus.service.method(DBUS_INTERFACE, in_signature="s", out_signature="s")
+        def GetActivityTabs(self, activity_name: str):
+            try:
+                act = self._manager.get(str(activity_name))
+                return json.dumps(act.tabs)
+            except ActivityError as e:
+                return json.dumps({"status": "error", "message": str(e)})
 
         @dbus.service.signal(DBUS_INTERFACE, signature="ss")
         def ActivityChanged(self, old_name: str, new_name: str):
@@ -85,9 +143,17 @@ def run_service():
         sys.exit(1)
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
     session_bus = dbus.SessionBus()
-    bus_name = dbus.service.BusName(DBUS_BUS_NAME, bus=session_bus)
+    bus_name = dbus.service.BusName(DBUS_BUS_NAME, bus=session_bus)  # noqa: F841
     manager = ActivityManager()
-    service = ActivitiesService(session_bus, manager)
+    service = ActivitiesService(session_bus, manager)  # noqa: F841
+
+    from gnome_activities.daemon.monitor import WindowMonitor
+    monitor = WindowMonitor(manager)
+    monitor.start()
+
     loop = GLib.MainLoop()
     logger.info("GNOME Activities daemon started.")
-    loop.run()
+    try:
+        loop.run()
+    finally:
+        monitor.stop()
