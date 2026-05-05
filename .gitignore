@@ -75,6 +75,16 @@ Thumbs.db
 *.changes
 *.buildinfo
 packaging/dist/
+# Debian build system generated files
+debian
+.pybuild/
+packaging/debian/.debhelper/
+packaging/debian/debhelper-build-stamp
+packaging/debian/files
+packaging/debian/*.log
+packaging/debian/*.debhelper
+packaging/debian/*.substvars
+packaging/debian/gnome-activities/
 
 # Firefox extension zip
 *.zip

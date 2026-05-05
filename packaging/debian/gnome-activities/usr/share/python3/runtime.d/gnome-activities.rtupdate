@@ -1,7 +1,0 @@
-#! /bin/sh
-set -e
-
-if [ "$1" = rtupdate ]; then
-	py3clean -p gnome-activities /usr/lib/gnome-activities
-	py3compile -p gnome-activities  /usr/lib/gnome-activities
-fi
