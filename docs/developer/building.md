@@ -47,6 +47,7 @@ bandit -r gnome_activities/ -ll
 ## Building the Debian Package
 
 ```bash
+cd packaging
 dpkg-buildpackage -us -uc -b
 ls ../*.deb
 ```
