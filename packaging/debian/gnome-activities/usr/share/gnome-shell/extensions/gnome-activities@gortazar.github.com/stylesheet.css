@@ -1,0 +1,60 @@
+.gnome-activities-indicator {
+    padding: 0 8px;
+    font-weight: bold;
+}
+
+.gnome-activities-menu-item {
+    padding: 4px 8px;
+}
+
+.gnome-activities-active {
+    font-weight: bold;
+    color: #4a9fd4;
+    /* The active indicator is conveyed purely through color and weight — no
+       extra symbol is injected into the label text. */
+}
+
+.gnome-activities-rename-btn {
+    padding: 0 4px;
+    opacity: 0.5;
+    border-radius: 4px;
+}
+
+.gnome-activities-rename-btn:hover {
+    opacity: 1.0;
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.gnome-activities-new-item {
+    color: #aaaaaa;
+    font-style: italic;
+}
+
+.gnome-activities-entry-box {
+    spacing: 6px;
+    padding: 4px 2px;
+}
+
+.gnome-activities-entry {
+    min-width: 160px;
+}
+
+.gnome-activities-ok-btn {
+    padding: 0 6px;
+    color: #4a9fd4;
+    border-radius: 4px;
+}
+
+.gnome-activities-ok-btn:hover {
+    background-color: rgba(74, 159, 212, 0.25);
+}
+
+.gnome-activities-cancel-btn {
+    padding: 0 6px;
+    color: #cc4444;
+    border-radius: 4px;
+}
+
+.gnome-activities-cancel-btn:hover {
+    background-color: rgba(204, 68, 68, 0.25);
+}
