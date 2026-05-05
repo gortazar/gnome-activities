@@ -2,7 +2,7 @@ Source: gnome-activities
 Section: utils
 Priority: optional
 Maintainer: GNOME Activities Contributors <gnome-activities@example.com>
-Build-Depends: debhelper-compat (= 13), python3, python3-setuptools, dh-python
+Build-Depends: debhelper-compat (= 13), python3, python3-setuptools, dh-python, pybuild-plugin-pyproject
 Standards-Version: 4.6.0
 Homepage: https://github.com/gortazar/gnome-activities
 Rules-Requires-Root: no
