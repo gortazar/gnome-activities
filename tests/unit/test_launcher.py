@@ -1,4 +1,5 @@
 """Unit tests for AppLauncher."""
+
 import signal
 import pytest
 from unittest.mock import patch, MagicMock

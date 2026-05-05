@@ -1,4 +1,5 @@
 """Unit tests for Activity and ActivityApp models."""
+
 import pytest
 from gnome_activities.models import Activity, ActivityApp
 

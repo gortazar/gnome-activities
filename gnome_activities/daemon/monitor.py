@@ -1,4 +1,5 @@
 """Window monitor for GNOME Activities daemon."""
+
 from __future__ import annotations
 import logging
 import threading

@@ -1,4 +1,5 @@
 """Unit tests for ActivityManager."""
+
 import pytest
 from unittest.mock import MagicMock, patch, call
 from gnome_activities.models import Activity, ActivityApp

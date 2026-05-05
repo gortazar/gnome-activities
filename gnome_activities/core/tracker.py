@@ -1,4 +1,5 @@
 """Application and window tracker for GNOME Activities."""
+
 from __future__ import annotations
 import os
 import subprocess
@@ -15,9 +16,7 @@ class AppTracker:
         """Return list of (pid, app_name, wm_class) for open windows."""
         windows = []
         try:
-            output = subprocess.check_output(
-                ["wmctrl", "-lp"], stderr=subprocess.DEVNULL, text=True
-            )
+            output = subprocess.check_output(["wmctrl", "-lp"], stderr=subprocess.DEVNULL, text=True)
             pids_seen = set()
             for line in output.splitlines():
                 parts = line.split(None, 4)

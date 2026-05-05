@@ -1,4 +1,5 @@
 """Application launcher for GNOME Activities."""
+
 from __future__ import annotations
 import os
 import shlex
@@ -39,9 +40,7 @@ class AppLauncher:
         """Close all open windows except always-available apps."""
         closed_pids = []
         try:
-            output = subprocess.check_output(
-                ["wmctrl", "-lp"], stderr=subprocess.DEVNULL, text=True
-            )
+            output = subprocess.check_output(["wmctrl", "-lp"], stderr=subprocess.DEVNULL, text=True)
             for line in output.splitlines():
                 parts = line.split(None, 4)
                 if len(parts) >= 3:

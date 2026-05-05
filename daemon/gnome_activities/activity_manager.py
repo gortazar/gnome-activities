@@ -1,4 +1,5 @@
 """Core activity manager."""
+
 import logging
 import uuid
 from datetime import datetime, timezone

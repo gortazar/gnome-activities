@@ -1,4 +1,5 @@
 """D-Bus service for gnome-activities daemon."""
+
 import json
 import logging
 import sys
@@ -69,8 +70,7 @@ def run_service():
         @dbus.service.method(DBUS_INTERFACE, in_signature="sssasb", out_signature="s")
         def AddAppToActivity(self, activity_name, app_id, exec_cmd, files, is_global):
             app = self.manager.add_app_to_activity(
-                str(activity_name), str(app_id), str(exec_cmd),
-                [str(f) for f in files], bool(is_global)
+                str(activity_name), str(app_id), str(exec_cmd), [str(f) for f in files], bool(is_global)
             )
             return json.dumps(app.to_dict())
 

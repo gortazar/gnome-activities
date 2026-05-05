@@ -1,4 +1,5 @@
 """Data models for GNOME Activities."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -9,6 +10,7 @@ from typing import Optional
 @dataclass
 class ActivityApp:
     """Represents an application associated with an activity."""
+
     app_id: str
     exec_cmd: str
     files: list[str] = field(default_factory=list)
@@ -35,13 +37,12 @@ class ActivityApp:
 @dataclass
 class Activity:
     """Represents a named activity context."""
+
     id: str
     name: str
     apps: list[ActivityApp] = field(default_factory=list)
     is_active: bool = False
-    created_at: str = field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
-    )
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     last_used: Optional[str] = None
 
     def to_dict(self) -> dict:

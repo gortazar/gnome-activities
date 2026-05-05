@@ -1,4 +1,5 @@
 """Activity data models for GNOME Activities Manager."""
+
 from __future__ import annotations
 import dataclasses
 from typing import List
@@ -7,6 +8,7 @@ from typing import List
 @dataclasses.dataclass
 class AppState:
     """State of an application within an activity."""
+
     app_id: str
     command: str
     files: List[str] = dataclasses.field(default_factory=list)
@@ -28,6 +30,7 @@ class AppState:
 @dataclasses.dataclass
 class Activity:
     """An activity/task with associated application states."""
+
     name: str
     description: str = ""
     apps: List[AppState] = dataclasses.field(default_factory=list)

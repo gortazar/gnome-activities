@@ -1,4 +1,5 @@
 """Activity manager - core business logic."""
+
 from __future__ import annotations
 import datetime
 from typing import Dict, List, Optional
@@ -15,6 +16,7 @@ class ActivityManager:
     def __init__(self, config_dir: Optional[str] = None):
         if config_dir:
             import pathlib
+
             storage.CONFIG_DIR = pathlib.Path(config_dir)
             storage.ACTIVITIES_FILE = storage.CONFIG_DIR / "activities.json"
             storage.CONFIG_FILE = storage.CONFIG_DIR / "config.json"
@@ -63,17 +65,50 @@ class ActivityManager:
         self._save()
         return activity
 
+    def rename(self, old_name: str, new_name: str) -> Activity:
+        storage.validate_name(old_name)
+        storage.validate_name(new_name)
+        if old_name not in self._activities:
+            raise ActivityError(f"Activity '{old_name}' not found.")
+        if new_name in self._activities:
+            raise ActivityError(f"Activity '{new_name}' already exists.")
+        activity = self._activities.pop(old_name)
+        activity.name = new_name
+        self._activities[new_name] = activity
+        self._save()
+        return activity
+
     def activate(self, name: str) -> Activity:
         storage.validate_name(name)
         if name not in self._activities:
             raise ActivityError(f"Activity '{name}' not found.")
+        always_available = self.get_always_available_apps()
+        previous = self.get_current()
         for act in self._activities.values():
             act.is_active = False
         activity = self._activities[name]
         activity.is_active = True
         activity.last_used = datetime.datetime.now(datetime.timezone.utc).isoformat()
         self._save()
+        # Close previous activity's apps (skip always-available ones).
+        if previous and previous.name != name:
+            self._close_apps(previous, always_available)
+        # Launch the new activity's apps.
+        self._launch_apps(activity, always_available)
         return activity
+
+    def _close_apps(self, activity: Activity, always_available: list) -> None:
+        from gnome_activities.core.launcher import AppLauncher
+
+        launcher = AppLauncher()
+        launcher.close_all_except(always_available)
+
+    def _launch_apps(self, activity: Activity, always_available: list) -> None:
+        from gnome_activities.core.launcher import AppLauncher
+
+        launcher = AppLauncher()
+        for app in activity.apps:
+            launcher.launch_app(app)
 
     def get_current(self) -> Optional[Activity]:
         for act in self._activities.values():

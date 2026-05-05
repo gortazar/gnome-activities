@@ -1,4 +1,5 @@
 """Unit tests for AppTracker."""
+
 import io
 import pytest
 from unittest.mock import patch

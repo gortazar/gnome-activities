@@ -1,4 +1,5 @@
 """Integration tests for manager and storage working together."""
+
 import pytest
 from gnome_activities.core.manager import ActivityManager
 from gnome_activities.core.activity import AppState

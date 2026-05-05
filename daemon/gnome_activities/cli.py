@@ -1,4 +1,5 @@
 """CLI for gnome-activities."""
+
 import logging
 import sys
 
@@ -121,8 +122,13 @@ def app_group():
 @click.argument("app_id")
 @click.argument("exec_cmd")
 @click.option("--file", "files", multiple=True, help="Files to open with the app.")
-@click.option("--global", "is_global", is_flag=True, default=False,
-              help="Mark app as global (not closed when switching activities).")
+@click.option(
+    "--global",
+    "is_global",
+    is_flag=True,
+    default=False,
+    help="Mark app as global (not closed when switching activities).",
+)
 @click.pass_context
 def app_add(ctx, activity, app_id, exec_cmd, files, is_global):
     """Add an app to an activity."""
@@ -175,6 +181,7 @@ def app_list(ctx, activity):
 def daemon():
     """Start the D-Bus daemon."""
     from .dbus_service import run_service
+
     run_service()
 
 

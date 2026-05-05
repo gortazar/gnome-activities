@@ -25,6 +25,13 @@ jobs:
         run: flake8 gnome_activities/ tests/ --max-line-length=120 --extend-ignore=E203,W503
       - name: Run black --check
         run: black --check gnome_activities/ tests/ --line-length=120
+      - name: Run flake8 (daemon)
+        run: |
+          cd daemon
+          pip install flake8
+          flake8 gnome_activities/ --max-line-length=120
+      - name: Run black --check (daemon)
+        run: black --check daemon/gnome_activities/ daemon/tests/ --line-length=120
 
   test:
     name: Test
@@ -56,6 +63,24 @@ jobs:
           file: ./coverage.xml
         continue-on-error: true
 
+  test-daemon:
+    name: Test (daemon)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install daemon dependencies
+        run: |
+          cd daemon
+          pip install -e ".[dev]"
+      - name: Run daemon tests
+        run: cd daemon && pytest tests/ -v --tb=short
+
   security:
     name: Security Scan
     runs-on: ubuntu-latest
@@ -82,7 +107,7 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y debhelper dh-python python3-all python3-setuptools python3-click
+          sudo apt-get install -y build-essential debhelper dh-python python3-all python3-setuptools python3-click
       - name: Prepare debian directory
         run: ln -s packaging/debian debian
       - name: Build deb package

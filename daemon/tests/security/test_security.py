@@ -1,10 +1,11 @@
 """Security tests for input sanitization and injection prevention."""
+
 import pytest
 from unittest.mock import patch, MagicMock
 from gnome_activities.app_launcher import _sanitize_path, _sanitize_app_id, launch_app, close_app
 
-
 # --- _sanitize_path tests ---
+
 
 def test_sanitize_path_blocks_semicolon():
     assert _sanitize_path("/home/user/file; rm -rf /") == ""
@@ -44,6 +45,7 @@ def test_sanitize_path_allows_alphanumeric_with_spaces():
 
 # --- _sanitize_app_id tests ---
 
+
 def test_sanitize_app_id_blocks_semicolon():
     assert _sanitize_app_id("firefox;rm -rf /") == ""
 
@@ -70,6 +72,7 @@ def test_sanitize_app_id_allows_dash_underscore():
 
 # --- launch_app security tests ---
 
+
 def test_launch_app_empty_exec_cmd_returns_false():
     assert launch_app("") is False
     assert launch_app("   ") is False
@@ -95,6 +98,7 @@ def test_launch_app_file_not_found_returns_false():
 
 # --- close_app security tests ---
 
+
 def test_close_app_empty_app_id_returns_false():
     assert close_app("") is False
     assert close_app("   ") is False
@@ -109,6 +113,7 @@ def test_close_app_with_pipe_returns_false():
 
 
 # --- Storage path traversal test ---
+
 
 def test_storage_handles_special_chars_in_activity_name(tmp_path):
     """Activity names with special chars should be stored safely (no path traversal)."""

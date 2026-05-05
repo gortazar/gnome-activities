@@ -1,4 +1,5 @@
 """Unit tests for Activity and AppState models."""
+
 from gnome_activities.core.activity import Activity, AppState
 
 

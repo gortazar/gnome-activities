@@ -1,4 +1,5 @@
 """End-to-end workflow tests for gnome-activities."""
+
 import pytest
 from unittest.mock import patch
 from gnome_activities.activity_manager import ActivityManager

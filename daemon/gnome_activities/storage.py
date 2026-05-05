@@ -1,4 +1,5 @@
 """JSON file storage for GNOME Activities state."""
+
 import json
 import logging
 from pathlib import Path

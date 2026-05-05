@@ -1,4 +1,5 @@
 """Shared pytest fixtures."""
+
 import pytest
 import gnome_activities.core.storage as storage
 

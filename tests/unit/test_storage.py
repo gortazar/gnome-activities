@@ -1,4 +1,5 @@
 """Unit tests for storage module."""
+
 import json
 import pytest
 from gnome_activities.core.activity import Activity, AppState

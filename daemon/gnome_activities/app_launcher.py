@@ -1,4 +1,5 @@
 """App launching and closing utilities."""
+
 import logging
 import subprocess
 import shlex
@@ -47,11 +48,7 @@ def close_app(app_id: str) -> bool:
     # Try wmctrl first
     if shutil.which("wmctrl"):
         try:
-            result = subprocess.run(
-                ["wmctrl", "-c", safe_id],
-                capture_output=True,
-                timeout=5
-            )
+            result = subprocess.run(["wmctrl", "-c", safe_id], capture_output=True, timeout=5)
             if result.returncode == 0:
                 logger.info(f"Closed app '{safe_id}' via wmctrl")
                 return True
@@ -61,11 +58,7 @@ def close_app(app_id: str) -> bool:
     # Fallback to pkill
     if shutil.which("pkill"):
         try:
-            result = subprocess.run(
-                ["pkill", "-f", safe_id],
-                capture_output=True,
-                timeout=5
-            )
+            result = subprocess.run(["pkill", "-f", safe_id], capture_output=True, timeout=5)
             if result.returncode == 0:
                 logger.info(f"Closed app '{safe_id}' via pkill")
                 return True
@@ -79,11 +72,12 @@ def close_app(app_id: str) -> bool:
 def _sanitize_path(path: str) -> str:
     """Return path only if it contains no shell metacharacters or path traversal."""
     import re
+
     # Block path traversal
     if ".." in path:
         return ""
     # Allow alphanumeric, space, /, ., -, _, ~
-    if re.match(r'^[\w/.\-~ ]+$', path):
+    if re.match(r"^[\w/.\-~ ]+$", path):
         return path
     return ""
 
@@ -91,6 +85,7 @@ def _sanitize_path(path: str) -> str:
 def _sanitize_app_id(app_id: str) -> str:
     """Return app_id only if it's safe (alphanumeric, dash, underscore, dot)."""
     import re
-    if re.match(r'^[\w.\-]+$', app_id):
+
+    if re.match(r"^[\w.\-]+$", app_id):
         return app_id
     return ""

@@ -1,4 +1,5 @@
 """Unit tests for Storage."""
+
 import json
 import pytest
 from gnome_activities.models import Activity, ActivityApp

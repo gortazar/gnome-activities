@@ -1,4 +1,5 @@
 """Security tests for GNOME Activities Manager."""
+
 import pytest
 import gnome_activities.core.storage as storage
 from gnome_activities.core.activity import Activity

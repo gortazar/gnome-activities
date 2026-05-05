@@ -1,4 +1,5 @@
 """End-to-end tests for CLI commands."""
+
 import pytest
 from click.testing import CliRunner
 import gnome_activities.core.storage as storage

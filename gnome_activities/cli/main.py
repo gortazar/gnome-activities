@@ -1,4 +1,5 @@
 """Command-line interface for GNOME Activities Manager."""
+
 from __future__ import annotations
 import sys
 
@@ -156,6 +157,7 @@ def daemon_cmd(action):
     if action == "start":
         try:
             from gnome_activities.daemon.service import run_service
+
             click.echo("Starting GNOME Activities daemon...")
             run_service()
         except SystemExit:

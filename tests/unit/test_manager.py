@@ -1,4 +1,5 @@
 """Unit tests for ActivityManager."""
+
 import pytest
 from gnome_activities.core.manager import ActivityManager, ActivityError
 

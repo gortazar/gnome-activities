@@ -1,4 +1,5 @@
 """Integration tests for the CLI using Click's CliRunner."""
+
 import json
 import pytest
 from unittest.mock import patch, MagicMock
@@ -107,8 +108,7 @@ def test_app_list_subcommand(tmp_path):
 def test_app_add_with_files_and_global_flag(tmp_path):
     make_runner_and_invoke(tmp_path, ["add", "Work"])
     result = make_runner_and_invoke(
-        tmp_path,
-        ["app", "add", "Work", "gedit", "gedit", "--file", "/home/user/doc.txt", "--global"]
+        tmp_path, ["app", "add", "Work", "gedit", "gedit", "--file", "/home/user/doc.txt", "--global"]
     )
     assert result.exit_code == 0
 
