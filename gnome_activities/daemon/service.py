@@ -85,9 +85,9 @@ def run_service():
         sys.exit(1)
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
     session_bus = dbus.SessionBus()
-    bus_name = dbus.service.BusName(DBUS_BUS_NAME, bus=session_bus)
+    bus_name = dbus.service.BusName(DBUS_BUS_NAME, bus=session_bus)  # noqa: F841
     manager = ActivityManager()
-    service = ActivitiesService(session_bus, manager)
+    service = ActivitiesService(session_bus, manager)  # noqa: F841
     loop = GLib.MainLoop()
     logger.info("GNOME Activities daemon started.")
     loop.run()
