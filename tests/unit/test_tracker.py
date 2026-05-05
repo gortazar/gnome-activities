@@ -1,7 +1,7 @@
 """Unit tests for AppTracker."""
 import io
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from gnome_activities.core.tracker import AppTracker
 
 
