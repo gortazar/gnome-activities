@@ -10,9 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    outputs:
-      version: ${{ steps.version.outputs.VERSION }}
-      tag: ${{ steps.version.outputs.TAG }}
     steps:
       - uses: actions/checkout@v6
 
@@ -72,14 +69,7 @@ jobs:
 
             Built from commit ${{ github.sha }}
 
-            ### Installation from APT Repository
-            ```bash
-            echo "deb [trusted=yes] https://gortazar.github.io/gnome-activities ./" | sudo tee /etc/apt/sources.list.d/gnome-activities.list
-            sudo apt update
-            sudo apt install gnome-activities
-            ```
-
-            ### Manual Installation
+            ### Installation
             Download the `.deb` package and install:
             ```bash
             sudo dpkg -i gnome-activities_${{ steps.version.outputs.VERSION }}-1_all.deb
@@ -94,80 +84,3 @@ jobs:
             gnome-activities-firefox-extension.zip
           draft: false
           prerelease: false
-
-      - name: Upload deb for APT publishing
-        uses: actions/upload-artifact@v4
-        with:
-          name: deb-package
-          path: "*.deb"
-
-  publish-apt:
-    name: Publish to APT Repository
-    runs-on: ubuntu-latest
-    needs: build-and-release
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Download deb package
-        uses: actions/download-artifact@v4.1.3
-        with:
-          name: deb-package
-          path: /tmp/deb
-
-      - name: Install APT tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y dpkg-dev apt-utils
-
-      - name: Setup and update APT repository
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
-
-          if git ls-remote --exit-code origin gh-pages; then
-            git fetch origin gh-pages
-            git worktree add /tmp/gh-pages FETCH_HEAD
-          else
-            # Create an empty orphan commit to initialise the gh-pages branch.
-            # 4b825dc642cb6eb9a060e54bf8d69288fbee4904 is Git's canonical empty-tree SHA-1.
-            INIT_COMMIT=$(git commit-tree 4b825dc642cb6eb9a060e54bf8d69288fbee4904 \
-              -m "Initialize gh-pages APT repository")
-            git branch gh-pages "$INIT_COMMIT"
-            git push origin gh-pages
-            git fetch origin gh-pages
-            git worktree add /tmp/gh-pages FETCH_HEAD
-          fi
-
-          DEB_FILE=$(ls /tmp/deb/*.deb | head -1)
-          mkdir -p /tmp/gh-pages/pool/main
-          cp "$DEB_FILE" /tmp/gh-pages/pool/main/
-
-          cd /tmp/gh-pages
-          dpkg-scanpackages --multiversion pool/ > Packages
-          gzip -k -f Packages
-          apt-ftparchive release . > Release
-          touch .nojekyll
-
-          cat > README.md << 'APTEOF'
-          # GNOME Activities APT Repository
-
-          To install GNOME Activities from this APT repository:
-
-          ```bash
-          echo "deb [trusted=yes] https://gortazar.github.io/gnome-activities ./" | sudo tee /etc/apt/sources.list.d/gnome-activities.list
-          sudo apt update
-          sudo apt install gnome-activities
-          ```
-          APTEOF
-
-          git add -A
-          git commit -m "APT repo: add gnome-activities ${{ needs.build-and-release.outputs.version }}" \
-            || echo "Nothing to commit"
-          git push origin HEAD:gh-pages
