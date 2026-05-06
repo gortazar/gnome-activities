@@ -29,13 +29,14 @@ jobs:
         run: ln -s packaging/debian debian
 
       - name: Build deb package
-        run: dpkg-buildpackage -us -uc -b
+        run: |
+          dpkg-buildpackage -us -uc -b
+          mv ../*.deb .
 
       - name: Package Firefox extension
         run: |
           cd firefox-extension
           zip -r ../gnome-activities-firefox-extension.zip . -x "native/*"
-          cd ..
 
       - name: Get version
         id: version
@@ -62,7 +63,7 @@ jobs:
             Download the `.zip` and load as a temporary extension in Firefox,
             or install from the Firefox Add-ons store (when published).
           files: |
-            ../*.deb
+            *.deb
             gnome-activities-firefox-extension.zip
           draft: false
           prerelease: false
