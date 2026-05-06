@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+  "name": "GNOME Activities",
+  "version": "0.1.0",
+  "description": "Track Firefox tabs for GNOME Activities Manager",
+  "permissions": ["tabs", "nativeMessaging"],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "gnome-activities@gnome-activities",
+      "strict_min_version": "78.0"
+    }
+  },
+  "icons": {
+    "48": "icons/icon-48.png",
+    "96": "icons/icon-96.png"
+  }
+}

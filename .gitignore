@@ -1,0 +1,96 @@
+# Byte-compiled / optimized / C extensions
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+.ruff_cache/
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.env
+
+# mypy / type checkers
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Debian build artifacts
+../*.deb
+../*.changes
+../*.buildinfo
+../*.dsc
+../*.tar.gz
+*.deb
+*.changes
+*.buildinfo
+packaging/dist/
+# Debian build system generated files
+debian
+.pybuild/
+packaging/debian/.debhelper/
+packaging/debian/debhelper-build-stamp
+packaging/debian/files
+packaging/debian/*.log
+packaging/debian/*.debhelper
+packaging/debian/*.substvars
+packaging/debian/gnome-activities/
+
+# Firefox extension zip
+*.zip
+
+# JavaScript/Node
+node_modules/
+
+# gnome-activities runtime
+~/.config/gnome-activities/

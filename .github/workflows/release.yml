@@ -1,0 +1,69 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-and-release:
+    name: Build and Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential debhelper dh-python python3-all python3-setuptools python3-click pybuild-plugin-pyproject zip
+          pip install build
+
+      - name: Prepare debian directory
+        run: ln -s packaging/debian debian
+
+      - name: Build deb package
+        run: |
+          dpkg-buildpackage -us -uc -b
+          mv ../*.deb .
+
+      - name: Package Firefox extension
+        run: |
+          cd firefox-extension
+          zip -r ../gnome-activities-firefox-extension.zip . -x "native/*"
+
+      - name: Get version
+        id: version
+        run: |
+          echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+          echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.TAG }}
+          name: "GNOME Activities v${{ steps.version.outputs.VERSION }}"
+          body: |
+            ## GNOME Activities ${{ steps.version.outputs.VERSION }}
+
+            ### Installation
+            Download the `.deb` package and install:
+            ```
+            sudo dpkg -i gnome-activities_*.deb
+            sudo apt-get install -f
+            ```
+
+            ### Firefox Extension
+            Download the `.zip` and load as a temporary extension in Firefox,
+            or install from the Firefox Add-ons store (when published).
+          files: |
+            *.deb
+            gnome-activities-firefox-extension.zip
+          draft: false
+          prerelease: false

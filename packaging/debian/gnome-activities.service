@@ -1,0 +1,13 @@
+[Unit]
+Description=GNOME Activities Manager Daemon
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/gnome-activities daemon --start
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target
