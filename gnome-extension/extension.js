@@ -93,7 +93,7 @@ const ActivitiesIndicator = GObject.registerClass(
                     DBUS_OBJECT_PATH,
                     (proxy, error) => {
                         if (error) {
-                            logError(error, 'GNOME Activities: D-Bus connection failed');
+                            console.error(error, 'GNOME Activities: D-Bus connection failed');
                             this._label.set_text('No Activity');
                             return;
                         }
@@ -101,7 +101,7 @@ const ActivitiesIndicator = GObject.registerClass(
                     }
                 );
             } catch (e) {
-                logError(e, 'GNOME Activities: failed to create D-Bus proxy');
+                console.error(e, 'GNOME Activities: failed to create D-Bus proxy');
                 this._label.set_text('No Activity');
             }
         }
@@ -153,13 +153,13 @@ const ActivitiesIndicator = GObject.registerClass(
 
                 this._proxy.TrackAppOpenedRemote(appId, execCmd, [], (_r, err) => {
                     if (err)
-                        logError(err, `GNOME Activities: TrackAppOpened failed for '${appId}'`);
+                        console.error(err, `GNOME Activities: TrackAppOpened failed for '${appId}'`);
                 });
             } else if (state === Shell.AppState.STOPPED) {
                 // App closed — remove it from the active activity.
                 this._proxy.TrackAppClosedRemote(appId, (_r, err) => {
                     if (err)
-                        logError(err, `GNOME Activities: TrackAppClosed failed for '${appId}'`);
+                        console.error(err, `GNOME Activities: TrackAppClosed failed for '${appId}'`);
                 });
             }
         }
@@ -194,7 +194,7 @@ const ActivitiesIndicator = GObject.registerClass(
 
             this._proxy.ListActivitiesRemote((result, error) => {
                 if (error) {
-                    logError(error, 'GNOME Activities: ListActivities failed');
+                    console.error(error, 'GNOME Activities: ListActivities failed');
                     return;
                 }
 
@@ -389,7 +389,7 @@ const ActivitiesIndicator = GObject.registerClass(
             if (!this._proxy) return;
             this._proxy.ActivateActivityRemote(name, (_result, error) => {
                 if (error)
-                    logError(error, `GNOME Activities: failed to activate '${name}'`);
+                    console.error(error, `GNOME Activities: failed to activate '${name}'`);
                 else
                     this._label.set_text(name);
             });
@@ -399,7 +399,7 @@ const ActivitiesIndicator = GObject.registerClass(
             if (!this._proxy) return;
             this._proxy.AddActivityRemote(name, (_result, error) => {
                 if (error)
-                    logError(error, `GNOME Activities: failed to create '${name}'`);
+                    console.error(error, `GNOME Activities: failed to create '${name}'`);
                 else
                     this._refreshMenu();
             });
@@ -410,7 +410,7 @@ const ActivitiesIndicator = GObject.registerClass(
             if (!this._proxy || oldName === newName) return;
             this._proxy.RenameActivityRemote(oldName, newName, (_result, error) => {
                 if (error)
-                    logError(error, `GNOME Activities: failed to rename '${oldName}'`);
+                    console.error(error, `GNOME Activities: failed to rename '${oldName}'`);
                 else
                     this._updateActiveLabel();
             });

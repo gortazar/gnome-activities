@@ -3,6 +3,6 @@
   "name": "GNOME Activities",
   "description": "KDE-like activities manager panel indicator for GNOME Shell",
   "version": 1,
-  "shell-version": ["45", "46", "47"],
+  "shell-version": ["45", "46", "47", "48"],
   "url": "https://github.com/gortazar/gnome-activities"
 }
